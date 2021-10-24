@@ -1,25 +1,50 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
+import $ from "jquery";
+import "bootstrap/dist/css/bootstrap.min.css";
+import firebase from "firebase/compat/app";
+import { useEffect } from "react";
+import { Modal, Button } from "react-bootstrap";
+import { ThemeConsumer } from "react-bootstrap/esm/ThemeProvider";
+import app from "./firebase";
+import "./App.scss";
+import Home from "./Home";
+import LoginScreen from "./LoginScreen";
+import { auth } from "./firebase";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      user: null,
+    };
+
+    this.authListener = this.authListener.bind(this);
+  }
+  componentDidMount() {
+    this.authListener();
+  }
+
+  authListener() {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        this.setState({
+          user,
+        });
+      } else {
+        this.setState({
+          user: null,
+        });
+      }
+    });
+  }
+
+  render() {
+    if (this.state.user !== null) {
+      return <Home />;
+    } else {
+      return <LoginScreen />;
+    }
+  }
 }
 
 export default App;
